@@ -1,5 +1,7 @@
 import mongoose,{Schema} from "mongoose";
-import { JsonWebTokenError } from "jsonwebtoken";
+// import { JsonWebTokenError } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+const { JsonWebTokenError } = jwt;
 import bcrypt from "bcrypt";
 
 const userScehema = new Schema(
@@ -19,7 +21,7 @@ const userScehema = new Schema(
         lowercase: true,
         trim: true,
     },
-        fullname :{
+        fullName :{
         type: String,
         required: true,
         trim: true,
@@ -52,12 +54,18 @@ const userScehema = new Schema(
     },
 )
 
-userScehema.pre("save", async function (next) {
-    if(!this.isModified("password")) return next();
+// userScehema.pre("save", async function (next) {
+//     if(!this.isModified("password")) return next();
 
-    this.password = await bcrypt.hash(this.password, 10)
-    next()
-} )
+//     this.password = await bcrypt.hash(this.password, 10)
+//     next()
+// } )
+
+userScehema.pre("save", async function () {
+    if (!this.isModified("password")) return;
+
+    this.password = await bcrypt.hash(this.password, 10);
+});
 
 userScehema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password)
@@ -68,7 +76,7 @@ userScehema.methods.generateAccessToken = function(){
         _id: this._id,
         email: this.email,
         username: this.username,
-        fullname: this.fullname
+        fullName: this.fullName
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
@@ -82,7 +90,7 @@ userScehema.methods.generateRefreshToken = function(){
         _id: this._id,
         email: this.email,
         username: this.username,
-        fullname: this.fullname
+        fullName: this.fullName
     },
     process.env.REFRESH_TOKEN_SECRET,
     {
