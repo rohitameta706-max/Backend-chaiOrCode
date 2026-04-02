@@ -10,11 +10,11 @@ dotenv.config({
 
 connectDB()
 .then(() => {
-    app.listen(process.env.PORT || 8000), () => {
-        console.log(` Server is running at port : ${process.env.PORT}/videotube`);
+    app.listen(process.env.PORT || 4001), () => {
+        console.log(` Server is running at port : ${process.env.PORT}`);
     }
 })
-.catch((err) => {https://www.vecteezy.com/free-png/avatar
+.catch((err) => {
     console.log("MONGO db connection failed !!!", err);
 })
 
